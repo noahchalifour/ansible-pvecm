@@ -1,4 +1,4 @@
-from ansible.module_utils import shell as shell_utils
+from ansible.module_utils import shell_utils
 
 
 def get_cluster_name(module):

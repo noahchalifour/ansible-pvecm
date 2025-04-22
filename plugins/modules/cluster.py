@@ -3,8 +3,8 @@
 
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils import shell as shell_utils
-from ansible.module_utils import cluster as cluster_utils
+from ansible.module_utils import shell_utils
+from ansible.module_utils import cluster_utils
 
 
 DOCUMENTATION = """
