@@ -3,3 +3,13 @@
 
 # Build files
 build/
+.gitlab-ci-local/
+
+# Ansible files
+.ansible/
+
+# Python files
+__pycache__
+
+# Test files
+tests/output/

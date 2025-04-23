@@ -1,5 +1,6 @@
-from ansible.module_utils import shell_utils
-from ansible.module_utils import cluster_utils
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.noahchalifour.pvecm.plugins.module_utils import shell_utils
+from ansible_collections.noahchalifour.pvecm.plugins.module_utils import cluster_utils
 
 
 DOCUMENTATION = """
@@ -24,18 +25,6 @@ author:
 """
 
 
-def join_cluster(module, hostname):
-    ssh_keyscan_command = f"ssh-keyscan -H {hostname} >> ~/.ssh/known_hosts"
-    shell_utils.run_command(module, ssh_keyscan_command)
-
-    join_command = f"pvecm add {hostname}"
-    stdout, _ = shell_utils.run_command(module, join_command)
-
-    module.exit_json(
-        changed=True, msg="Node joined the cluster successfully.", stdout=stdout
-    )
-
-
 def main():
     module_args = dict(
         leader=dict(type="str", required=True), cluster=dict(type="str", required=True)
@@ -51,7 +40,9 @@ def main():
         module.exit_json(changed=False, msg="Node already associated with cluster.")
 
     # Join the cluster
-    join_cluster(module, leader_hostname)
+    cluster_utils.join_cluster(module, leader_hostname)
+
+    module.exit_json(changed=True, msg=f"Successfully joined cluster '{cluster_name}'")
 
 
 if __name__ == "__main__":

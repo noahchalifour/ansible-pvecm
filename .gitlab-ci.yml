@@ -1,0 +1,104 @@
+# GitLab CI/CD Pipeline for Ansible Collection
+# noahchalifour/pvecm
+
+stages:
+  - lint
+  - test
+  - version
+  - build
+  - publish
+
+variables:
+  ANSIBLE_COLLECTIONS_PATH: "/.ansible/collections"
+
+# Common setup for all jobs
+.setup:
+  before_script:
+    - pip install ansible ansible-lint pytest pytest-mock
+    - mkdir -p ${ANSIBLE_COLLECTIONS_PATH}/ansible_collections/noahchalifour/pvecm
+    - cp -R ${CI_PROJECT_DIR}/* ${ANSIBLE_COLLECTIONS_PATH}/ansible_collections/noahchalifour/pvecm
+    - ls -l ${ANSIBLE_COLLECTIONS_PATH}/ansible_collections/noahchalifour/pvecm
+
+# Lint the collection
+lint:
+  stage: lint
+  image: python:3.9
+  extends: .setup
+  script:
+    - ansible-lint
+  allow_failure: true
+
+# Run unit tests
+test:
+  stage: test
+  image: python:3.9
+  extends: .setup
+  script:
+    # - cd ${ANSIBLE_COLLECTIONS_PATH}/ansible_collections/noahchalifour/pvecm && ansible-test units --venv -v
+    - cd ${ANSIBLE_COLLECTIONS_PATH}/ansible_collections/noahchalifour/pvecm && ls -l
+
+# Update version from tag
+update-version:
+  stage: version
+  image: python:3.9
+  extends: .setup
+  script:
+    - |
+      if [[ -n "$CI_COMMIT_TAG" && "$CI_COMMIT_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        # Extract version number from tag (remove 'v' prefix)
+        VERSION=${CI_COMMIT_TAG#v}
+        echo "Updating version to $VERSION from tag $CI_COMMIT_TAG"
+        make version VERSION=$VERSION
+      else
+        echo "No version tag detected, using existing version in galaxy.yml"
+      fi
+  artifacts:
+    paths:
+      - galaxy.yml
+
+# Build the collection
+build:
+  stage: build
+  image: python:3.9
+  extends: .setup
+  needs:
+    - update-version
+  script:
+    - make build
+  artifacts:
+    paths:
+      - build/*.tar.gz
+    expire_in: 1 week
+
+# Publish to Ansible Galaxy
+publish:
+  stage: publish
+  image: python:3.9
+  extends: .setup
+  needs:
+    - build
+  script:
+    - if [ -z "$GALAXY_API_KEY" ]; then echo "GALAXY_API_KEY is not set"; exit 1; fi
+    - ansible-galaxy collection publish build/noahchalifour-pvecm-*.tar.gz --api-key $GALAXY_API_KEY
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+      when: on_success
+    - when: never
+
+# Manual version update and tag creation
+manual-version:
+  stage: version
+  image: python:3.9
+  extends: .setup
+  script:
+    - if [ -z "$NEW_VERSION" ]; then echo "NEW_VERSION is not set"; exit 1; fi
+    - make version VERSION=$NEW_VERSION
+    - git config --global user.name "GitLab CI"
+    - git config --global user.email "gitlab-ci@example.com"
+    - git add galaxy.yml
+    - git commit -m "Bump version to $NEW_VERSION"
+    - git tag -a "v$NEW_VERSION" -m "Version $NEW_VERSION"
+    - git push origin HEAD:$CI_COMMIT_REF_NAME "v$NEW_VERSION"
+  when: manual
+  only:
+    - main

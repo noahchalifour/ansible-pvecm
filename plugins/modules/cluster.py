@@ -3,8 +3,8 @@
 
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils import shell_utils
-from ansible.module_utils import cluster_utils
+from ansible_collections.noahchalifour.pvecm.plugins.module_utils import shell_utils
+from ansible_collections.noahchalifour.pvecm.plugins.module_utils import cluster_utils
 
 
 DOCUMENTATION = """
@@ -24,12 +24,6 @@ author:
 """
 
 
-def create_cluster(module, cluster_name):
-    command = f"pvecm create {cluster_name}"
-    stdout, _ = shell_utils.run_command(module, command)
-    module.exit_json(changed=True, msg="Cluster created successfully.", stdout=stdout)
-
-
 def main():
     module_args = dict(name=dict(type="str", required=True))
 
@@ -42,7 +36,9 @@ def main():
         module.exit_json(changed=False, msg="Node already associated with cluster.")
 
     # Create cluster
-    create_cluster(module, cluster_name)
+    cluster_utils.create_cluster(module, cluster_name)
+
+    module.exit_json(changed=True, msg="Created new cluster")
 
 
 if __name__ == "__main__":

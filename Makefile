@@ -2,7 +2,7 @@
 # Ansible Collection Makefile
 #==============================================================================
 
-.PHONY: publish clean
+.PHONY: version info publish clean
 
 #------------------------------------------------------------------------------
 # Configuration
@@ -40,3 +40,15 @@ info:
 	@echo "Collection: $(NAMESPACE).$(NAME)"
 	@echo "Version:    $(VERSION)"
 	@echo "Artifact:   $(ARTIFACT)"
+
+# Update version in galaxy.yml
+# Usage: make version VERSION=x.y.z
+version:
+	@if [ -z "$(VERSION)" ]; then \
+		echo "Error: VERSION parameter is required. Usage: make version VERSION=x.y.z"; \
+		exit 1; \
+	fi
+	@echo "Updating version to $(VERSION)..."
+	@sed -i '' 's/^version:.*$$/version: $(VERSION)/' galaxy.yml
+	@echo "Version updated to $(VERSION)"
+	@echo "Don't forget to commit the changes!"
