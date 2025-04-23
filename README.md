@@ -48,7 +48,7 @@ Adds or removes nodes from an existing Proxmox VE cluster.
     - noahchalifour.pvecm
   tasks:
     - name: Create the new cluster
-      noahchalifour.pvecm.node:
+      noahchalifour.pvecm.cluster:
         name: cluster-name
 
 - hosts: proxmox_nodes
