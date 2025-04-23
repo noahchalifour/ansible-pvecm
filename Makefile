@@ -13,6 +13,9 @@ NAMESPACE := $(shell sed -n 's/^namespace: //p' galaxy.yml | tr -d ' ')
 NAME      := $(shell sed -n 's/^name: //p' galaxy.yml | tr -d ' ')
 ARTIFACT  := build/$(NAMESPACE)-$(NAME)-$(VERSION).tar.gz
 
+# Some functions
+SED_INPLACE := $(shell uname | grep -q Darwin && echo "sed -i ''" || echo "sed -i")
+
 #------------------------------------------------------------------------------
 # Targets
 #------------------------------------------------------------------------------
@@ -49,6 +52,6 @@ version:
 		exit 1; \
 	fi
 	@echo "Updating version to $(VERSION)..."
-	@sed -i '' 's/^version:.*$$/version: $(VERSION)/' galaxy.yml
+	@$(SED_INPLACE) 's/^version:.*$$/version: $(VERSION)/' galaxy.yml
 	@echo "Version updated to $(VERSION)"
 	@echo "Don't forget to commit the changes!"
