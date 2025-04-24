@@ -1,0 +1,29 @@
+objects:
+  role: {}
+plugins:
+  become: {}
+  cache: {}
+  callback: {}
+  cliconf: {}
+  connection: {}
+  filter: {}
+  httpapi: {}
+  inventory: {}
+  lookup: {}
+  module:
+    cluster:
+      description: Manage a Proxmox cluster
+      name: cluster
+      namespace: ''
+      version_added: null
+    node:
+      description: Manage a Proxmox cluster node
+      name: node
+      namespace: ''
+      version_added: null
+  netconf: {}
+  shell: {}
+  strategy: {}
+  test: {}
+  vars: {}
+version: 1.0.1
