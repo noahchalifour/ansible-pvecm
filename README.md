@@ -30,13 +30,9 @@ collections:
 
 ## Roles
 
-### pvecm.cluster
-
-Creates and configures a Proxmox VE cluster.
-
 ### pvecm.node
 
-Adds or removes nodes from an existing Proxmox VE cluster.
+Used for defining nodes in a Proxmox cluster, this will create a cluster or add nodes to an existing cluster.
 
 ## Usage Examples
 
