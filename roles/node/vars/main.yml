@@ -1,2 +1,4 @@
 ---
 # vars file for node
+
+ssh_key_path: /root/.ssh/id_ed25519

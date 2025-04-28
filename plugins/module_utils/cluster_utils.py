@@ -4,7 +4,7 @@ from ansible_collections.noahchalifour.pvecm.plugins.module_utils import shell_u
 def get_cluster_name(module):
     # Run `pvecm status` to retrieve the cluster name
     command = "pvecm status"
-    stdout, stderr = shell_utils.run_command(module, command)
+    stdout, stderr = shell_utils.run_command(module, command, fail_on_error=False)
 
     # Extract the cluster name from the output
     for line in stdout.splitlines():
@@ -21,13 +21,8 @@ def create_cluster(module, cluster_name):
 
 
 def join_cluster(module, hostname):
-    ssh_keyscan_command = f"ssh-keyscan -H {hostname} >> ~/.ssh/known_hosts"
-    shell_utils.run_command(module, ssh_keyscan_command)
-
     join_command = f"pvecm add {hostname} --use_ssh"
-
     stdout, _ = shell_utils.run_command(module, join_command)
-
     module.exit_json(
         changed=True, msg="Node joined cluster successfully.", stdout=stdout
     )

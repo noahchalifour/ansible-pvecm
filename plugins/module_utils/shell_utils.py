@@ -1,7 +1,7 @@
 import subprocess
 
 
-def run_command(module, command):
+def run_command(module, command, fail_on_error: bool = True):
     try:
         result = subprocess.run(
             command,
@@ -13,5 +13,6 @@ def run_command(module, command):
         )
         return result.stdout, None
     except subprocess.CalledProcessError as err:
-        module.fail_json(msg="Command failed: {0}".format(err.stderr))
+        if fail_on_error:
+            module.fail_json(msg="Command failed: {0}".format(err.stderr))
     return "", None
