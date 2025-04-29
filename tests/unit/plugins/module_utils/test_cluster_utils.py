@@ -32,7 +32,9 @@ class TestClusterUtils(unittest.TestCase):
         self.assertEqual(result, "test-cluster")
 
         # Verify run_command was called with correct arguments
-        mock_run_command.assert_called_once_with(mock_module, "pvecm status")
+        mock_run_command.assert_called_once_with(
+            mock_module, "pvecm status", fail_on_error=False
+        )
 
     @patch(
         "ansible_collections.noahchalifour.pvecm.plugins.module_utils.shell_utils.run_command"
