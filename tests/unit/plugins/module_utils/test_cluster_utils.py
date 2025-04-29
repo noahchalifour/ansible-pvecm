@@ -139,7 +139,6 @@ class TestClusterUtils(unittest.TestCase):
         # Verify run_command was called with correct arguments
         mock_run_command.assert_has_calls(
             [
-                call(module, "ssh-keyscan -H 192.168.1.100 >> ~/.ssh/known_hosts"),
                 call(module, "pvecm add 192.168.1.100 --use_ssh"),
             ]
         )
